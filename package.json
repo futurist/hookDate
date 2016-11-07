@@ -1,0 +1,28 @@
+{
+  "name": "hookdate",
+  "version": "1.0.0",
+  "description": "Hook javascript Date object to save date and time for each call, and playback(mock) the saved data to get same result again. Useful for testing.",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/futurist/hookDate.git"
+  },
+  "keywords": [
+    "mock",
+    "date",
+    "hook",
+    "datetime"
+  ],
+  "author": "James Yang <jamesyang999@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/futurist/hookDate/issues"
+  },
+  "homepage": "https://github.com/futurist/hookDate#readme"
+}

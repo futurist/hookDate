@@ -1,42 +1,67 @@
-if(Date.hooked) console.warn('Date already hooked, should not hook again')
-var oldDate = Date
+// lib hookDate
 
-hookDate.hooked = true
-hookDate.playBack = hookDate.playBack || true
-hookDate.dateStore = hookDate.dateStore || [1478486532502]
+var hook = function (store, playBack) {
+  var hookDate = function () {
+    // called with new
+    var value
+    var playBack = hookDate.playBack
+    var hookDateStore = hookDate.dateStore
+    var calledWithNew = this instanceof hookDate
+    var args = [].slice.call(arguments)
+    var emptyArgs = !args.length
+    if(emptyArgs && playBack) args = hookDateStore.splice(0,1)
 
-var playBack = hookDate.playBack
-var hookDateStore = hookDate.dateStore
+    // call new Date
+    var instance = new (oldDate.bind.apply(oldDate, [null].concat(args)))()
+    // mock constructor
+    instance.constructor = oldDate
+    instance.__proto__  = oldDate.prototype
 
-hookDate = function () {
-  // called with new
-  var value
-  var calledWithNew = this instanceof hookDate
-  var args = [].slice.call(arguments)
-  var emptyArgs = !args.length
-  if(emptyArgs && playBack) args = hookDateStore.splice(0,1)
+    if(emptyArgs && !playBack) hookDateStore.push(instance.getTime())
+    // save the value
+    return calledWithNew ? instance : instance.toString()
+  }
 
-  // call new Date
-  var val = new (oldDate.bind.apply(oldDate, [null].concat(args)))()
-  // mock constructor
-  val.constructor = oldDate
+  if(Date._hooked) return console.warn('Date already hooked, should not hook again')
 
-  if(emptyArgs && !playBack) hookDateStore.push(val.getTime())
-  // save the value
-  return calledWithNew ? val : val.toString()
+  var oldDate = Date
+  hookDate.oldDate = oldDate
+  hookDate.dateStore = Array.isArray(store) ? store : []
+  hookDate.playBack = hookDate.playBack || !!playBack
+  hookDate.hooked = true
+
+  // mock prototypes
+  hookDate.prototype = oldDate.prototype
+
+  // mock static methods
+  if(Array.isArray(hookDate.hookMethods)){
+    hookDate.hookMethods.forEach(function(k) {
+      delete hookDate[k]
+    })
+  }
+  hookDate.hookMethods = []
+  Object.getOwnPropertyNames(oldDate).forEach(function(k) {
+    hookDate.hookMethods.push(k)
+    hookDate[k] = oldDate[k]
+  })
+
+  // hook Date.now
+  hookDate.now = function () {
+    var playBack = hookDate.playBack
+    var hookDateStore = hookDate.dateStore
+    var val = oldDate.now()
+    if(playBack) val = hookDateStore.shift()
+    else hookDateStore.push(val)
+    return val
+  }
+
+  hookDate.unhook = function() {
+    Date = oldDate
+    hookDate.hooked = false
+  }
+
+  Date = hookDate
+  return hookDate
 }
 
-// mock prototypes
-hookDate.prototype = oldDate.prototype
-Object.getOwnPropertyNames(oldDate).forEach(function(k) {
-  hookDate[k] = oldDate[k]
-})
-
-// hook Date.now
-hookDate.now = function () {
-  var val = oldDate.now()
-  hookDateStore.push(val)
-  return val
-}
-
-Date = hookDate
+module.exports = {hook: hook}
