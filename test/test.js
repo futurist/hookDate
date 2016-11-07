@@ -82,4 +82,10 @@ describe('test Date', function () {
     assert.equal('Thu, 01 Jan 1970 00:00:00 GMT', new Date().toUTCString())
     ret.unhook()
   })
+
+  it('Should not hook again', function() {
+    var ret = lib.hook()
+    assert.equal(lib.hook(), undefined)
+    ret.unhook()
+  })
 })
