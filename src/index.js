@@ -1,7 +1,9 @@
 // lib hookDate
 
 var hook = function (store, playBack) {
-  if(Date.hooked) return console.warn('Date already hooked, should not hook again')
+  if(Date.hooked) {
+    throw new Error('Date already hooked, should not hook again')
+  }
 
   var oldDate = Date
   store = Array.isArray(store) ? store : []

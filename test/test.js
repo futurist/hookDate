@@ -53,7 +53,7 @@ describe('test Date', function () {
     assert.equal(d[1].toString(), new globalDate(1378504648011).toString())
     assert.equal(d[2].toISOString(), '2016-01-09T16:00:00.000Z')
     assert.equal(d[3], 1458504748011)
-    assert.equal(new globalDate() - d[4] < 1, true) // close to system time
+    assert.equal(new globalDate() - d[4] < 10, true) // close to system time
     ret.unhook()
   })
 
@@ -85,7 +85,7 @@ describe('test Date', function () {
 
   it('Should not hook again', function() {
     var ret = lib.hook()
-    assert.equal(lib.hook(), undefined)
+    assert.throws(lib.hook, Error)
     ret.unhook()
   })
 })
