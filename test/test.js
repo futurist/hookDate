@@ -17,26 +17,26 @@ describe('test Date', function () {
   it('Date constructor and prototype', function () {
     var constructor = globalDate
     var prototype = globalDate.prototype
-    var ret = lib.hook()
+    lib.hook()
     var d = new Date
-    assert.strictEqual(Date.hooked, true)
+    assert.strictEqual(Date.__hooked, true)
     assert.deepEqual(Date.prototype, prototype)
     assert.strictEqual(d.constructor, constructor)
     assert.strictEqual(d instanceof Date, true)
     assert.strictEqual(d instanceof globalDate, true)
     assert.strictEqual(Object.prototype.toString.call(d), '[object Date]')
     assert.strictEqual(d.__proto__, globalDate.prototype)
-    ret.unhook()
+    lib.unhook()
   })
   it('Should record result', function () {
-    var ret = lib.hook()
+    lib.hook()
     // only empty args will record
     Date()
     new Date
     new Date('2016', '0', '10') // this should not record
     Date.now()
-    assert.equal(ret.dateStore.length, 3)
-    ret.unhook()
+    assert.equal(lib.dateStore.length, 3)
+    lib.unhook()
   })
   it('Should playback result', function () {
     var store = [1478504748011, 1378504648011, 1458504748011]
@@ -54,11 +54,11 @@ describe('test Date', function () {
     assert.equal(d[2].toISOString(), '2016-01-09T16:00:00.000Z')
     assert.equal(d[3], 1458504748011)
     assert.equal(new globalDate() - d[4] < 10, true) // close to system time
-    ret.unhook()
+    lib.unhook()
   })
 
   it('Should keep global Date methods', function () {
-    var ret = lib.hook([0, 0], true)
+    lib.hook([0, 0], true)
 
     // Date.parse
     assert.equal('807926400000', Date.parse('Wed, 09 Aug 1995 00:00:00 GMT'))
@@ -80,12 +80,24 @@ describe('test Date', function () {
     assert.equal('Wed, 09 Aug 1995 00:00:00 GMT', utcDate.toUTCString())
 
     assert.equal('Thu, 01 Jan 1970 00:00:00 GMT', new Date().toUTCString())
-    ret.unhook()
+    lib.unhook()
   })
 
   it('Should not hook again', function() {
-    var ret = lib.hook()
+    lib.hook()
     assert.throws(lib.hook, Error)
-    ret.unhook()
+    lib.unhook()
+  })
+
+  it('Should dynamic change dateStore and playBack', function() {
+    var d = [
+      +new Date(), new Date(Date.UTC(2011, 2, 1)).getTime()
+    ]
+    lib.hook()
+    lib.dateStore = d.slice(0)
+    lib.playBack = true
+    assert.equal(+new Date(), d[0])
+    assert.equal(new Date().toISOString(), "2011-03-01T00:00:00.000Z")
+    lib.unhook()
   })
 })

@@ -1,7 +1,7 @@
 // lib hookDate
 
 var hook = function (store, playBack) {
-  if(Date.hooked) {
+  if(Date.__hooked) {
     throw new Error('Date already hooked, should not hook again')
   }
 
@@ -10,8 +10,8 @@ var hook = function (store, playBack) {
 
   var hookDate = function () {
     // called with new
-    var playBack = hookDate.playBack
-    var dateStore = hookDate.dateStore
+    var playBack = lib.playBack
+    var dateStore = lib.dateStore
     var calledWithNew = this instanceof hookDate
     var args = [].slice.call(arguments)
     var emptyArgs = !args.length
@@ -29,43 +29,53 @@ var hook = function (store, playBack) {
   }
 
   // special props
-  hookDate.oldDate = oldDate
-  hookDate.dateStore = store
-  hookDate.playBack = !!playBack
-  hookDate.hooked = true
+  lib.oldDate = oldDate
+  lib.dateStore = store
+  lib.playBack = !!playBack
+  hookDate.__hooked = true
 
   // mock prototypes
   hookDate.prototype = oldDate.prototype
 
   // mock static methods
-  if(hookDate.hookedMethods) {
-    hookDate.hookedMethods.forEach(function(k) {
+  if(lib.staticMethods) {
+    lib.staticMethods.forEach(function(k) {
       delete hookDate[k]
     })
   }
-  hookDate.hookedMethods = []
+  lib.staticMethods = []
   Object.getOwnPropertyNames(oldDate).forEach(function(k) {
-    hookDate.hookedMethods.push(k)
+    lib.staticMethods.push(k)
     hookDate[k] = oldDate[k]
   })
 
   // hook Date.now
   hookDate.now = function () {
-    var playBack = hookDate.playBack
-    var dateStore = hookDate.dateStore
+    var playBack = lib.playBack
+    var dateStore = lib.dateStore
     var val = oldDate.now()
     if(playBack) val = dateStore.shift()
     else dateStore.push(val)
     return val
   }
 
-  hookDate.unhook = function() {
-    Date = oldDate
-    hookDate.hooked = false
-  }
-
   Date = hookDate
-  return hookDate
 }
 
-module.exports = {hook: hook}
+var unhook = function() {
+  if(!Date.__hooked) return
+  if(!lib.oldDate) throw new Error('hookDate: cannot get old Date')
+  Date.__hooked = false
+  Date = lib.oldDate
+}
+
+var lib = {
+  oldDate: null,
+  dateStore : [],
+  playBack : false,
+  staticMethods: [],
+  hook: hook,
+  unhook: unhook
+}
+
+module.exports = lib

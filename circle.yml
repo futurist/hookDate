@@ -1,0 +1,9 @@
+# circle-ci config yml
+
+machine:
+  node:
+    version: 6
+
+test:
+  override:
+    - ./node_modules/.bin/mocha
