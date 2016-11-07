@@ -50,6 +50,7 @@ describe('test Date', function() {
     ]
     assert.equal(d[0], new globalDate(1478504748011).toString())
     assert.equal(d[1].toISOString(), "2013-09-06T21:57:28.011Z")
+    assert.equal(d[1].toString(), new globalDate(1378504648011).toString())
     assert.equal(d[2].toISOString(), "2016-01-09T16:00:00.000Z")
     assert.equal(d[3], 1458504748011)
     assert.equal(new globalDate() - d[4] < 1, true)  // close to system time
