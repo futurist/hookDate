@@ -9,9 +9,9 @@ export default {
     minify({iife: 'dist/hookdate.min.js'})
   ],
   targets: [
-    { format: 'es',   dest: 'dist/hookdate.es.js'   },
-    { format: 'cjs',  dest: 'dist/hookdate.cjs.js'  },
-    { format: 'amd',  dest: 'dist/hookdate.amd.js'  },
-    { format: 'iife', dest: 'dist/hookdate.iife.js' },
+    { format: 'es',   dest: 'dist/hookdate.es.js'   , useStrict: false },
+    { format: 'cjs',  dest: 'dist/hookdate.cjs.js'  , useStrict: false },
+    { format: 'amd',  dest: 'dist/hookdate.amd.js'  , useStrict: false },
+    { format: 'iife', dest: 'dist/hookdate.iife.js' , useStrict: false },
   ]
 }

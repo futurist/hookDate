@@ -1,4 +1,4 @@
-define(function () { 'use strict';
+define(function () {
 
 // lib hookDate
 
@@ -36,9 +36,6 @@ var hook = function (store, playBack) {
   lib.playBack = !!playBack;
   hookDate.__hooked = true;
 
-  // mock prototypes
-  hookDate.prototype = oldDate.prototype;
-
   // mock static methods
   if(lib.staticMethods) {
     lib.staticMethods.forEach(function(k) {
@@ -46,6 +43,7 @@ var hook = function (store, playBack) {
     });
   }
   lib.staticMethods = [];
+  // "parse", "UTC", "now", "name", "prototype", "length"
   Object.getOwnPropertyNames(oldDate).forEach(function(k) {
     lib.staticMethods.push(k);
     hookDate[k] = oldDate[k];
