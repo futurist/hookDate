@@ -78,4 +78,4 @@ var lib = {
   unhook: unhook
 }
 
-module.exports = lib
+export default lib
