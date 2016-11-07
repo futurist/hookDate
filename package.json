@@ -9,9 +9,12 @@
   },
   "files": [
     "test",
-    "dist"
+    "dist",
+    "*.json"
   ],
   "scripts": {
+    "build": "rollup -c",
+    "pretest": "npm run build",
     "test": "mocha"
   },
   "repository": {

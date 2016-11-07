@@ -19,7 +19,7 @@ describe('test Date', function () {
     var prototype = globalDate.prototype
     lib.hook()
     var d = new Date
-    assert.strictEqual(Date.__hooked, true)
+    assert.strictEqual(typeof Date.__hook, 'object')
     assert.deepEqual(Date.prototype, prototype)
     assert.strictEqual(d.constructor, constructor)
     assert.strictEqual(d instanceof Date, true)
@@ -98,6 +98,21 @@ describe('test Date', function () {
     lib.playBack = true
     assert.equal(+new Date(), d[0])
     assert.equal(new Date().toISOString(), "2011-03-01T00:00:00.000Z")
+    lib.unhook()
+  })
+
+  it('Should pause right', function() {
+    lib.hook()
+    Date()
+    Date()
+    Date.now()
+    Date.__hook.pause=true
+    Date()
+    Date.now()
+    Date.__hook.pause=false
+    Date()
+    Date.now()
+    assert.equal(lib.dateStore.length, 5)
     lib.unhook()
   })
 })
