@@ -43,6 +43,7 @@ describe('test Date', function () {
     lib.unhook()
   })
   it('Should playback result', function () {
+    'use strict'
     var store = [1478504748011, 1378504648011, 1458504748011]
     var ret = lib.hook(store, true)
     var d = [

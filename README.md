@@ -11,10 +11,12 @@ npm install hookdate
 
 ## Usage
 
- - For record and playback `new Date` calls:
+ - Record and playback `new Date` calls:
 
 ``` javascript
 var lib = require('hookdate')
+
+lib.hook()  //start hook Date object with record mode
 
 var d = [
   new Date(),
@@ -37,25 +39,34 @@ new Date()
 Date.now()
 // 1478515156899
 
-lib.unhook()
+lib.unhook()  //stop hook, restore to old Date object
 ```
 
- - For only playback `new Date` in lib:
+ - Playback `new Date` with time array:
 
 ``` javascript
 var lib = require('hookdate')
 
+// set time array, and playBack=true
 lib.hook([1298937600000, 1478514684440], true)
 
-/* hook first date */
+/* playback first date */
 new Date().toISOString()
 // "2011-03-01T00:00:00.000Z"
 
-/* hook second date */
+/* pause for a while */
+lib.pause = true
+new Date()
+new Date()
+
+/* continue */
+lib.pause = false
+
+/* playback second date */
 new Date().toISOString()
 // "2016-11-07T10:31:24.440Z"
 
-/* drained */
+/* drained, same as normal call */
 new Date()
 // return system time
 
@@ -71,7 +82,7 @@ Hook global Date object
 
 Optional pass dateStore as time array (milliseconds elapsed since the UNIX epoch), will used for record/playback, **default: []**
 
-Optional pass whether to playback or record, **default: false**
+Optional pass whether to playback (`true`) or record (`false`), **default: false**
 
 ### **lib.unhook : fn() => void**
 
