@@ -2,7 +2,7 @@ define(function () {
 
 // lib hookDate
 
-var hook = function (store, playBack) {
+var hook = function (store, playBack, cb) {
   if(Date.__hook) {
     throw new Error('Date already hooked, should not hook again')
   }
@@ -22,7 +22,10 @@ var hook = function (store, playBack) {
     var calledWithNew = this instanceof hookDate;
     var args = [].slice.call(arguments);
     var emptyArgs = !args.length;
-    if(!pause && emptyArgs && playBack) args = dateStore.splice(0,1);
+    if(!pause && emptyArgs && playBack) {
+      args = dateStore.splice(0,1);
+      cb && cb(playBack, args[0]);
+    }
 
     // call new Date
     var instance = new (oldDate.bind.apply(oldDate, [null].concat(args)))();
@@ -30,7 +33,11 @@ var hook = function (store, playBack) {
     instance.constructor = oldDate;
     instance.__proto__  = oldDate.prototype;
 
-    if(!pause && emptyArgs && !playBack) dateStore.push(instance.getTime());
+    if(!pause && emptyArgs && !playBack) {
+      var val = instance.getTime();
+      dateStore.push(val);
+      cb && cb(playBack, val);
+    }
     // save the value
     return calledWithNew ? instance : instance.toString()
   };
@@ -50,9 +57,13 @@ var hook = function (store, playBack) {
     var playBack = lib.playBack;
     var dateStore = lib.dateStore;
     var val = oldDate.now();
-    if(!pause){
-      if (playBack) val = dateStore.shift();
-      else dateStore.push(val);
+    if(!pause) {
+      if (playBack) {
+        val = dateStore.shift();
+      } else {
+        dateStore.push(val);
+      }
+      cb && cb(playBack, val);
     }
     return val
   };

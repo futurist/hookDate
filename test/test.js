@@ -33,7 +33,11 @@ describe('test Date', function () {
     lib.unhook()
   })
   it('Should record result', function () {
-    lib.hook()
+    var cb = function(isPlayBack, value) {
+      assert.equal(isPlayBack, false)
+      console.log(value)
+    }
+    lib.hook(null,null, cb)
     // only empty args will record
     Date()
     new Date
@@ -44,8 +48,12 @@ describe('test Date', function () {
   })
   it('Should playback result', function () {
     'use strict'
+    var cb = function(isPlayBack, value) {
+      assert.equal(isPlayBack, true)
+      console.log(value)
+    }
     var store = [1478504748011, 1378504648011, 1458504748011]
-    var ret = lib.hook(store, true)
+    var ret = lib.hook(store, true, cb)
     var d = [
       Date(),
       new Date(),

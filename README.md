@@ -76,33 +76,35 @@ lib.unhook()
 
 ## API
 
-### **lib.hook : fn(dateStore: number[], isPlayBack: boolean) => void**
+### **lib.hook :fn( dateStore? :number[], isPlayBack? :boolean, cb? :fn(isPlayback :boolean, value :number) ) => void**
 
 Hook global Date object
 
 Optional pass dateStore as time array (milliseconds elapsed since the UNIX epoch), will used for record/playback, **default: []**
 
-Optional pass whether to playback (`true`) or record (`false`), **default: false**
+Optional pass whether to playback (**true**) or record (**false**), **default: false**
 
-### **lib.unhook : fn() => void**
+Optional pass callback to monitor the **isPlayBack** and **value** for record/playback.
+
+### **lib.unhook :fn() => void**
 
 Restore old global Date object.
 
-### **lib.dateStore : number[]**
+### **lib.dateStore :number[]**
 
 Time array (milliseconds elapsed since the UNIX epoch) used for any call to `new Date()`, `Date()`, `Date.now`.
 
 If **isPlayBack** is **true**, will **shift** first value into the Date result, else **push** new time value into it.
 
-### **lib.playBack : boolean**
+### **lib.playBack :boolean**
 
 Whether the mode is record(**false**), or a playback(**true**).
 
-### **lib.oldDate : Date**
+### **lib.oldDate :Date**
 
 The reference of old global Date object.
 
-### **lib.pause : boolean**
+### **lib.pause :boolean**
 
 When set to true, will pause record/playback, set to false to continue.
 
