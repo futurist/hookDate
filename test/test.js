@@ -3,6 +3,10 @@ var assert = require('assert')
 
 globalDate = global.Date
 
+function toUTC(d) {
+  return new Date(d.getTime() - d.getTimezoneOffset()*60*1000)
+}
+
 describe('test Date', function () {
   // ensure it's not hooked
   beforeEach(function () {
@@ -44,14 +48,14 @@ describe('test Date', function () {
     var d = [
       Date(),
       new Date(),
-      new Date('2016', '0', '10'), // this should not read from store
+      toUTC(new Date(2016, 0, 10)), // this should not read from store
       Date.now(),
       new Date() // the store drain, should return system time
     ]
     assert.equal(d[0], new globalDate(1478504748011).toString())
     assert.equal(d[1].toISOString(), '2013-09-06T21:57:28.011Z')
     assert.equal(d[1].toString(), new globalDate(1378504648011).toString())
-    assert.equal(d[2].toISOString(), '2016-01-09T16:00:00.000Z')
+    assert.equal(d[2].toISOString(), '2016-01-10T00:00:00.000Z')
     assert.equal(d[3], 1458504748011)
     assert.equal(new globalDate() - d[4] < 10, true) // close to system time
     lib.unhook()
@@ -68,15 +72,11 @@ describe('test Date', function () {
     assert.equal('Wed, 09 Aug 1995 00:00:00 GMT', date.toUTCString())
 
     // new Date with y/m
-    var locDate = new Date(1995, 7)
-    var utcMs = locDate.valueOf() - locDate.getTimezoneOffset() * 60 * 1000
-    var utcDate = new Date(utcMs)
+    var utcDate = toUTC(new Date(1995, 7))
     assert.equal('Tue, 01 Aug 1995 00:00:00 GMT', utcDate.toUTCString())
 
     // new Date with y/m/d
-    var locDate = new Date(1995, 7, 9)
-    var utcMs = locDate.valueOf() - locDate.getTimezoneOffset() * 60 * 1000
-    var utcDate = new Date(utcMs)
+    var utcDate = toUTC(new Date(1995, 7, 9))
     assert.equal('Wed, 09 Aug 1995 00:00:00 GMT', utcDate.toUTCString())
 
     assert.equal('Thu, 01 Jan 1970 00:00:00 GMT', new Date().toUTCString())

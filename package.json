@@ -1,6 +1,6 @@
 {
   "name": "hookdate",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Hook javascript Date object to save date and time for each call, and playback(mock) the saved data to get same result again. Useful for testing.",
   "main": "./dist/hookdate.cjs.js",
   "esnext:main": "./src/index.js",
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "rollup -c",
     "pretest": "npm run build",
-    "test": "mocha"
+    "test": "TZ=1 mocha"
   },
   "repository": {
     "type": "git",

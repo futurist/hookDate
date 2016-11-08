@@ -91,5 +91,9 @@ Whether the mode is record(**false**), or a playback(**true**).
 
 The reference of old global Date object.
 
+### **lib.pause : boolean**
+
+When set to true, will pause record/playback, set to false to continue.
+
 
 
