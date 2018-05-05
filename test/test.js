@@ -21,7 +21,7 @@ describe('test Date', function () {
   it('Date constructor and prototype', function () {
     var constructor = globalDate
     var prototype = globalDate.prototype
-    lib.hook()
+    lib.start()
     var d = new Date
     assert.strictEqual(typeof Date.__hook, 'object')
     assert.deepEqual(Date.prototype, prototype)
@@ -30,21 +30,21 @@ describe('test Date', function () {
     assert.strictEqual(d instanceof globalDate, true)
     assert.strictEqual(Object.prototype.toString.call(d), '[object Date]')
     assert.strictEqual(d.__proto__, globalDate.prototype)
-    lib.unhook()
+    lib.stop()
   })
   it('Should record result', function () {
     var cb = function(isPlayBack, value) {
       assert.equal(isPlayBack, false)
       console.log(value)
     }
-    lib.hook(null,null, cb)
+    lib.start(null,null, cb)
     // only empty args will record
     Date()
     new Date
     new Date('2016', '0', '10') // this should not record
     Date.now()
     assert.equal(lib.dateStore.length, 3)
-    lib.unhook()
+    lib.stop()
   })
   it('Should playback result', function () {
     'use strict'
@@ -53,7 +53,7 @@ describe('test Date', function () {
       console.log(value)
     }
     var store = [1478504748011, 1378504648011, 1458504748011]
-    var ret = lib.hook(store, true, cb)
+    var ret = lib.start(store, true, cb)
     var d = [
       Date(),
       new Date(),
@@ -67,11 +67,11 @@ describe('test Date', function () {
     assert.equal(d[2].toISOString(), '2016-01-10T00:00:00.000Z')
     assert.equal(d[3], 1458504748011)
     assert.equal(new globalDate() - d[4] < 10, true) // close to system time
-    lib.unhook()
+    lib.stop()
   })
 
   it('Should keep global Date methods', function () {
-    lib.hook([0, 0], true)
+    lib.start([0, 0], true)
 
     // Date.parse
     assert.equal('807926400000', Date.parse('Wed, 09 Aug 1995 00:00:00 GMT'))
@@ -89,29 +89,29 @@ describe('test Date', function () {
     assert.equal('Wed, 09 Aug 1995 00:00:00 GMT', utcDate.toUTCString())
 
     assert.equal('Thu, 01 Jan 1970 00:00:00 GMT', new Date().toUTCString())
-    lib.unhook()
+    lib.stop()
   })
 
   it('Should not hook again', function() {
-    lib.hook()
-    assert.throws(lib.hook, Error)
-    lib.unhook()
+    lib.start()
+    assert.throws(lib.start, Error)
+    lib.stop()
   })
 
   it('Should dynamic change dateStore and playBack', function() {
     var d = [
       +new Date(), new Date(Date.UTC(2011, 2, 1)).getTime()
     ]
-    lib.hook()
+    lib.start()
     lib.dateStore = d.slice(0)
     lib.playBack = true
     assert.equal(+new Date(), d[0])
     assert.equal(new Date().toISOString(), "2011-03-01T00:00:00.000Z")
-    lib.unhook()
+    lib.stop()
   })
 
   it('Should pause right', function() {
-    lib.hook()
+    lib.start()
     Date()
     Date()
     Date.now()
@@ -122,21 +122,21 @@ describe('test Date', function () {
     Date()
     Date.now()
     assert.equal(lib.dateStore.length, 5)
-    lib.unhook()
+    lib.stop()
   })
 
   it('timezoneOffset', function () {
     lib.timezoneOffset = 10
-    lib.hook([0], true)
+    lib.start([0], true)
     var d = new Date
     assert.equal(d.getTime(), 0)
     assert.equal(d.getTimezoneOffset(), 10)
-    lib.unhook()
+    lib.stop()
 
-    lib.hook([0], true)
+    lib.start([0], true)
     var d = new Date
     assert.equal(d.getTime(), 0)
     assert.equal(d.getTimezoneOffset(), 0)
-    lib.unhook()
+    lib.stop()
   })
 })

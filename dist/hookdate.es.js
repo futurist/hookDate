@@ -98,8 +98,8 @@ var lib = {
   oldDate: null,
   dateStore: [],
   playBack: false,
-  hook: hook,
-  unhook: unhook,
+  start: hook,
+  stop: unhook,
   pause: false,
   timezoneOffset: null
 };

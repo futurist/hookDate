@@ -16,7 +16,7 @@ npm install hookdate
 ``` javascript
 var lib = require('hookdate')
 
-lib.hook()  //start hook Date object with record mode
+lib.start()  //start hook Date object with record mode
 
 var d = [
   new Date(),
@@ -39,7 +39,7 @@ new Date()
 Date.now()
 // 1478515156899
 
-lib.unhook()  //stop hook, restore to old Date object
+lib.stop()  //stop hook, restore to old Date object
 ```
 
  - Playback `new Date` with time array:
@@ -52,7 +52,7 @@ var lib = require('hookdate')
 lib.timezoneOffset = 60
 
 // set time array, and playBack=true
-lib.hook([1298937600000, 1478514684440], true)
+lib.start([1298937600000, 1478514684440], true)
 
 /* playback first date */
 var d = new Date()
@@ -78,12 +78,12 @@ new Date()
 // return system time
 
 // restore old Date object
-lib.unhook()
+lib.stop()
 ```
 
 ## API
 
-### **lib.hook :fn( dateStore? :number[], isPlayBack? :boolean, cb? :fn(isPlayback :boolean, value :number) ) => void**
+### **lib.start :fn( dateStore? :number[], isPlayBack? :boolean, cb? :fn(isPlayback :boolean, value :number) ) => void**
 
 Hook global Date object
 
@@ -93,7 +93,7 @@ Optional pass whether to playback (**true**) or record (**false**), **default: f
 
 Optional pass callback to monitor the **isPlayBack** and **value** for record/playback.
 
-### **lib.unhook :fn() => void**
+### **lib.stop :fn() => void**
 
 Restore old global Date object.
 
