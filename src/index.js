@@ -1,7 +1,7 @@
 // lib hookDate
 
 var hook = function (store, playBack, cb) {
-  if(Date.__hook) {
+  if (Date.__hook) {
     throw new Error('Date already hooked, should not hook again')
   }
 
@@ -12,7 +12,7 @@ var hook = function (store, playBack, cb) {
   lib.dateStore = store
   lib.playBack = !!playBack
 
-  var hookDate = function () {
+  var hookDate = function (y, m, d, h, M, s, ms) {
     // called with new
     var pause = lib.pause
     var playBack = lib.playBack
@@ -20,8 +20,8 @@ var hook = function (store, playBack, cb) {
     var calledWithNew = this instanceof hookDate
     var args = [].slice.call(arguments)
     var emptyArgs = !args.length
-    if(!pause && emptyArgs && playBack) {
-      args = dateStore.splice(0,1)
+    if (!pause && emptyArgs && playBack) {
+      args = dateStore.splice(0, 1)
       cb && cb(playBack, args[0])
     }
 
@@ -29,9 +29,9 @@ var hook = function (store, playBack, cb) {
     var instance = new (oldDate.bind.apply(oldDate, [null].concat(args)))()
     // mock constructor
     instance.constructor = oldDate
-    instance.__proto__  = oldDate.prototype
+    instance.__proto__ = oldDate.prototype
 
-    if(!pause && emptyArgs && !playBack) {
+    if (!pause && emptyArgs && !playBack) {
       var val = instance.getTime()
       dateStore.push(val)
       cb && cb(playBack, val)
@@ -41,11 +41,19 @@ var hook = function (store, playBack, cb) {
   }
 
   // special props
-  hookDate.__hook = lib
+
+  if ('defineProperty' in Object) {
+    Object.defineProperty(hookDate, '__hook', {
+      value: lib
+    })
+  } else {
+    hookDate.__hook = lib
+  }
 
   // mock static methods
   // "parse", "UTC", "now", "name", "prototype", "length"
-  Object.getOwnPropertyNames(oldDate).forEach(function(k) {
+  Object.getOwnPropertyNames(oldDate).forEach(function (k) {
+    if (['length', 'name'].indexOf(k) > -1) return
     hookDate[k] = oldDate[k]
   })
 
@@ -55,7 +63,7 @@ var hook = function (store, playBack, cb) {
     var playBack = lib.playBack
     var dateStore = lib.dateStore
     var val = oldDate.now()
-    if(!pause) {
+    if (!pause) {
       if (playBack) {
         val = dateStore.shift()
       } else {
@@ -69,18 +77,18 @@ var hook = function (store, playBack, cb) {
   Date = hookDate
 }
 
-var unhook = function() {
+var unhook = function () {
   var handle = Date.__hook
-  if(!handle) return
-  if(!handle.oldDate) throw new Error('hookDate: cannot get old Date')
+  if (!handle) return
+  if (!handle.oldDate) throw new Error('hookDate: cannot get old Date')
   Date = handle.oldDate
   return handle
 }
 
 var lib = {
   oldDate: null,
-  dateStore : [],
-  playBack : false,
+  dateStore: [],
+  playBack: false,
   hook: hook,
   unhook: unhook,
   pause: false
