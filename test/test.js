@@ -124,4 +124,19 @@ describe('test Date', function () {
     assert.equal(lib.dateStore.length, 5)
     lib.unhook()
   })
+
+  it('timezoneOffset', function () {
+    lib.timezoneOffset = 10
+    lib.hook([0], true)
+    var d = new Date
+    assert.equal(d.getTime(), 0)
+    assert.equal(d.getTimezoneOffset(), 10)
+    lib.unhook()
+
+    lib.hook([0], true)
+    var d = new Date
+    assert.equal(d.getTime(), 0)
+    assert.equal(d.getTimezoneOffset(), 0)
+    lib.unhook()
+  })
 })

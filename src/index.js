@@ -1,4 +1,5 @@
 // lib hookDate
+var _getTimezoneOffset = Date.prototype.getTimezoneOffset
 
 var hook = function (store, playBack, cb) {
   if (Date.__hook) {
@@ -11,6 +12,12 @@ var hook = function (store, playBack, cb) {
   lib.oldDate = oldDate
   lib.dateStore = store
   lib.playBack = !!playBack
+
+  if (typeof lib.timezoneOffset === 'number') {
+    oldDate.prototype.getTimezoneOffset = function() {
+      return lib.timezoneOffset
+    }
+  }
 
   var hookDate = function (y, m, d, h, M, s, ms) {
     // called with new
@@ -82,6 +89,8 @@ var unhook = function () {
   if (!handle) return
   if (!handle.oldDate) throw new Error('hookDate: cannot get old Date')
   Date = handle.oldDate
+  Date.prototype.getTimezoneOffset = _getTimezoneOffset
+  lib.timezoneOffset = null
   return handle
 }
 
@@ -91,7 +100,8 @@ var lib = {
   playBack: false,
   hook: hook,
   unhook: unhook,
-  pause: false
+  pause: false,
+  timezoneOffset: null
 }
 
 export default lib
