@@ -47,11 +47,18 @@ lib.unhook()  //stop hook, restore to old Date object
 ``` javascript
 var lib = require('hookdate')
 
+// OPTIONAL: set timezoneOffset
+// CAUTION: this should be set BEFORE lib.hook
+lib.timezoneOffset = 60
+
 // set time array, and playBack=true
 lib.hook([1298937600000, 1478514684440], true)
 
 /* playback first date */
-new Date().toISOString()
+var d = new Date()
+d.timezoneOffset()
+// 60
+d.toISOString()
 // "2011-03-01T00:00:00.000Z"
 
 /* pause for a while */
